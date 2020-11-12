@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  api:
+    container_name: muufin-api
+    restart: unless-stopped
+    build: ./backend
+    ports:
+      - 5000:5000
+    links:
+      - mongo
+    volumes:
+      - ./backend:/usr/src/api
+  web:
+    container_name: muufin-web
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    build: ./frontend
+    volumes:
+      - ./frontend:/usr/src/www
+      # - /usr/src/www/node_modules
+      # - /usr/src/www/.next
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb/data/db
