@@ -11,6 +11,8 @@ services:
       - mongo
     volumes:
       - ./backend:/usr/src/api
+    networks:
+      - muufin-net
   web:
     container_name: muufin-web
     restart: unless-stopped
@@ -21,10 +23,21 @@ services:
       - ./frontend:/usr/src/www
       # - /usr/src/www/node_modules
       # - /usr/src/www/.next
+    links:
+      - api
+    networks:
+      - muufin-net
   mongo:
     container_name: mongo
     image: mongo
     ports:
       - 27017:27017
     volumes:
-      - ./mongodb/data/db
+      - ./backend:/mongodb/data/db
+    networks:
+      - muufin-net
+
+networks:
+  muufin-net:
+    external:
+      name: muufin-net
