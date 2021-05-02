@@ -36,6 +36,14 @@ services:
       - ./backend:/mongodb/data/db
     networks:
       - muufin-net
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    networks:
+      - muufin-net
 
 networks:
   muufin-net:
