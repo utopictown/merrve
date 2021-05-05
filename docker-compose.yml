@@ -37,7 +37,7 @@ services:
     networks:
       - muufin-net
   nginx:
-    restart: always
+    restart: unless-stopped
     build:
       context: ./nginx
     ports:
