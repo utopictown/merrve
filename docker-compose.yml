@@ -1,51 +1,65 @@
-version: "3.8"
+version: "3.9"
 
 services:
   api:
-    container_name: muufin-api
+    container_name: meerve-api
+    image: meerve-api
     restart: unless-stopped
     build: ./backend
     ports:
       - 5000:5000
     links:
       - mongo
+    command: yarn dev
     volumes:
       - ./backend:/usr/src/api
+      - /usr/src/api/node_modules
+    depends_on:
+      - mongo
     networks:
-      - muufin-net
+      - meerve-net
   web:
-    container_name: muufin-web
+    container_name: meerve-web
+    image: meerve-web
     restart: unless-stopped
     ports:
       - 3000:3000
     build: ./frontend
+    command: yarn dev
     volumes:
       - ./frontend:/usr/src/www
-      # - /usr/src/www/node_modules
-      # - /usr/src/www/.next
+      - /usr/src/www/node_modules
+      - /usr/src/www/.next
     links:
       - api
+    depends_on:
+      - api
     networks:
-      - muufin-net
+      - meerve-net
   mongo:
     container_name: mongo
-    image: mongo
+    image: mongo:latest
     ports:
       - 27017:27017
     volumes:
-      - ./backend:/mongodb/data/db
+      - data-volume:/data/db
     networks:
-      - muufin-net
+      - meerve-net
   nginx:
+    container_name: meerve-nginx
+    image: meerve-nginx
     restart: unless-stopped
     build:
       context: ./nginx
     ports:
       - "80:80"
     networks:
-      - muufin-net
+      - meerve-net
 
 networks:
-  muufin-net:
-    external:
-      name: muufin-net
+  meerve-net:
+    driver: bridge
+
+volumes:
+  data-volume:
+  node_modules:
