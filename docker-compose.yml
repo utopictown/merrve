@@ -4,16 +4,14 @@ services:
   api:
     container_name: meerve-api
     image: meerve-api
-    restart: unless-stopped
+    restart: always
     build: ./backend
     ports:
       - 5000:5000
     links:
       - mongo
-    command: yarn dev
     volumes:
-      - ./backend:/usr/src/api
-      - /usr/src/api/node_modules
+      - ./backend:/usr/src/app
     depends_on:
       - mongo
     networks:
@@ -21,15 +19,12 @@ services:
   web:
     container_name: meerve-web
     image: meerve-web
-    restart: unless-stopped
+    restart: always
     ports:
       - 3000:3000
     build: ./frontend
-    command: yarn dev
     volumes:
-      - ./frontend:/usr/src/www
-      - /usr/src/www/node_modules
-      - /usr/src/www/.next
+      - ./frontend:/usr/src/app
     links:
       - api
     depends_on:
@@ -48,7 +43,7 @@ services:
   nginx:
     container_name: meerve-nginx
     image: meerve-nginx
-    restart: unless-stopped
+    restart: always
     build:
       context: ./nginx
     ports:
@@ -62,4 +57,3 @@ networks:
 
 volumes:
   data-volume:
-  node_modules:
