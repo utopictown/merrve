@@ -1,6 +1,8 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/utopictown/muufin-frontend
+	ignore = dirty
 [submodule "backend"]
 	path = backend
 	url = https://github.com/utopictown/muufin-backend
+	ignore = dirty
