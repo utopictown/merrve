@@ -1,9 +1,10 @@
 {
-  "editor.formatOnSave": true,
   "editor.minimap.maxColumn": 150,
   "prettier.printWidth": 100,
   "tailwindCSS.emmetCompletions": true,
   "emmet.showSuggestionsAsSnippets": true,
   "gitlens.advanced.repositorySearchDepth": 100,
-  "files.autoGuessEncoding": true
+  "files.autoGuessEncoding": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
