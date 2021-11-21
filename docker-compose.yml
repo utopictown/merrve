@@ -7,7 +7,7 @@ services:
     restart: always
     build: ./backend
     ports:
-      - 5000:5000
+      - 3001:3001
     links:
       - mongo
     volumes:
@@ -48,6 +48,8 @@ services:
       context: ./nginx
     ports:
       - "80:80"
+    depends_on:
+      - web
     networks:
       - meerve-net
 
