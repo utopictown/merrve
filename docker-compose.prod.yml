@@ -1,0 +1,155 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: meerve-api
+    image: meerve-api
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 127.0.0.1:3001:3001
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    links:
+      - mongo
+      - redis
+    volumes:
+      - api-uploads:/usr/src/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - meerve-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    container_name: meerve-web
+    image: meerve-web
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 127.0.0.1:3000:3000
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - meerve-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - meerve-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    container_name: meerve-redis
+    image: redis:alpine
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - meerve-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nginx:
+    container_name: meerve-nginx
+    image: meerve-nginx
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/certbot/conf:/etc/nginx/certbot/conf:ro
+      - ./nginx/certbot/data:/etc/nginx/certbot/data:ro
+      - ./nginx/certbot/www:/var/www/certbot:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks:
+      - meerve-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  meerve-net:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
+  redis-data:
+    driver: local
+  api-uploads:
+    driver: local
