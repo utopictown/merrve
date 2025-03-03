@@ -63,7 +63,7 @@ services:
         max-file: "3"
 
   mongo:
-    container_name: mongo
+    container_name: merrve-mongo
     image: mongo:latest
     restart: always
     command: mongod --auth
@@ -124,6 +124,7 @@ services:
       - ./nginx/certbot/conf:/etc/nginx/certbot/conf:ro
       - ./nginx/certbot/data:/etc/nginx/certbot/data:ro
       - ./nginx/certbot/www:/var/www/certbot:ro
+      - ./nginx/logs:/var/log/nginx
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
