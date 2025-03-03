@@ -4,3 +4,4 @@ backend
 frontend
 .submodules
 .gitmodules
+.env

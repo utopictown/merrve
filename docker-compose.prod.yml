@@ -2,8 +2,8 @@ version: "3.9"
 
 services:
   api:
-    container_name: meerve-api
-    image: meerve-api
+    container_name: merrve-api
+    image: merrve-api
     restart: always
     build:
       context: ./backend
@@ -11,7 +11,7 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - 127.0.0.1:3001:3001
+      - 3001:3001
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
       interval: 30s
@@ -28,7 +28,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - meerve-net
+      - merrve-net
     logging:
       driver: "json-file"
       options:
@@ -36,8 +36,8 @@ services:
         max-file: "3"
 
   web:
-    container_name: meerve-web
-    image: meerve-web
+    container_name: merrve-web
+    image: merrve-web
     restart: always
     build:
       context: ./frontend
@@ -45,7 +45,7 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - 127.0.0.1:3000:3000
+      - 3000:3000
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 30s
@@ -55,7 +55,7 @@ services:
       api:
         condition: service_healthy
     networks:
-      - meerve-net
+      - merrve-net
     logging:
       driver: "json-file"
       options:
@@ -71,7 +71,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     ports:
-      - 127.0.0.1:27017:27017
+      - 27017:27017
     volumes:
       - mongodb-data:/data/db
     healthcheck:
@@ -80,7 +80,7 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - meerve-net
+      - merrve-net
     logging:
       driver: "json-file"
       options:
@@ -88,12 +88,12 @@ services:
         max-file: "3"
 
   redis:
-    container_name: meerve-redis
+    container_name: merrve-redis
     image: redis:alpine
     restart: always
     command: redis-server --requirepass "${REDIS_PASSWORD}"
     ports:
-      - 127.0.0.1:6379:6379
+      - 6379:6379
     volumes:
       - redis-data:/data
     healthcheck:
@@ -102,7 +102,7 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - meerve-net
+      - merrve-net
     logging:
       driver: "json-file"
       options:
@@ -110,8 +110,8 @@ services:
         max-file: "3"
 
   nginx:
-    container_name: meerve-nginx
-    image: meerve-nginx
+    container_name: merrve-nginx
+    image: merrve-nginx
     restart: always
     build:
       context: ./nginx
@@ -136,7 +136,7 @@ services:
       api:
         condition: service_healthy
     networks:
-      - meerve-net
+      - merrve-net
     logging:
       driver: "json-file"
       options:
@@ -144,7 +144,7 @@ services:
         max-file: "3"
 
 networks:
-  meerve-net:
+  merrve-net:
     driver: bridge
 
 volumes:
